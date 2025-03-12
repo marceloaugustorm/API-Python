@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, json, request, jsonify
 from models import Alunos, Turmas, Professores
 
 app = Flask(__name__)
@@ -36,6 +36,15 @@ def listar_alunos(id):
             return jsonify({"id": aluno.id, "nome": aluno.nome, "idade": aluno.idade})
     return jsonify({"message": "Aluno não encontrado"})
 
+@app.route("/alunos_list", methods = ["GET"])
+def listar_todos_alunos():
+    alunos_list = [aluno.to_dict() for aluno in alunos_db]
+    qtd_alunos = len(alunos_db)
+    if qtd_alunos == 0:
+        return jsonify({"mensagem": "Alunos não encontrados"})
+    else:
+        return jsonify(alunos_list), 200
+
 @app.route("/alunos/<int:id>", methods = ["DELETE"])
 def excluir_aluno(id):
     for aluno in alunos_db:
@@ -43,6 +52,27 @@ def excluir_aluno(id):
             aluno_to_delete = aluno
             alunos_db.remove(aluno_to_delete)
     return jsonify({"message": "Aluno Excluído"})
+
+@app.route("/alunos_list", methods = ["DELETE"])
+def excluir_todos_alunos():
+    alunos_db.clear()
+    return jsonify({"mensagem": "Alunos removidos com sucesso"})
+
+@app.route("/alunos/<int:id>", methods = ["PUT"])
+def atualizar_aluno(id):
+    qtd_alunos = len(alunos_db)
+    if qtd_alunos == 0:
+        return jsonify({"mensagem": "Alunos não encontrados"})
+    else:
+        for aluno in alunos_db:
+            if aluno.id == id:
+                nome_aluno = request.get_json()
+                aluno.nome = nome_aluno.get("nome", aluno.nome)
+                return jsonify({"mensagem": "Aluno atualizado"})
+            
+
+
+
 
 
 
@@ -61,6 +91,15 @@ def listar_turmas(id):
             return jsonify({"id": turma.id, "nome": turma.nome, "professsor_id": turma.professor_id})
     return jsonify({"message": "Turma não encontrada"})
 
+@app.route("/turmas_list", methods = ["GET"])
+def listar_todas_turmas():
+    turmas_list = [turma.to_dict() for turma in turmas_db]
+    qtd_turmas = len(turmas_db)
+    if qtd_turmas == 0 :
+        return jsonify({"mensagem": "Turmas não encontradas"})
+    else:
+        return jsonify(turmas_list)
+
 @app.route("/turmas/<int:id>", methods = ["DELETE"])
 def excluir_turma(id):
     for turma in turmas_db:
@@ -68,6 +107,27 @@ def excluir_turma(id):
             turma_to_delete = turma
             turmas_db.remove(turma_to_delete)
         return jsonify({"message": "Turma excluída"})
+
+@app.route("/turmas_list", methods = ["DELETE"])
+def excluir_todas_turmas():
+    turmas_db.clear()
+    return jsonify({"mensagem": "Turmas excluídas"})
+
+@app.route("/turmas/<int:id>", methods = ["PUT"])
+def atualizar_turma(id):
+    qtd_turmas = len(turmas_db)
+    if qtd_turmas == 0:
+        return jsonify({"mensagem": "Turma não encontrada"})
+    else:
+        for turma in turmas_db:
+            if turma.id == id:
+                nome_turma = request.get_json()
+                turma.nome = nome_turma.get("nome", turma.nome)
+                return jsonify({"mensagem": "Turma atualizada"})
+
+
+
+
 
 
 
@@ -86,6 +146,14 @@ def listar_professores(id):
             return jsonify({"id": professor.id, "nome": professor.nome, "disciplina": professor.disciplina})
     return jsonify({"message": "Professor não encontrado"})
 
+@app.route("/professores_list", methods = ["GET"])
+def listar_todos_professores():
+    professores_list = [professor.to_dict() for professor in professores_db]
+    qtd_professores = len(professores_db)
+    if qtd_professores == 0:
+        return jsonify({"mensagem": "Professores não encontrados"})
+    else:
+        return jsonify(professores_list), 200
 
 @app.route("/professores/<int:id>", methods = ["DELETE"])
 def excluir_professor(id):
@@ -94,6 +162,24 @@ def excluir_professor(id):
             professor_to_delte = professor
             professores_db.remove(professor)
         return jsonify({"mensagem": "Professor excluído"})
+
+@app.route("/professores_list", methods = ["DELETE"])
+def excluir_todos_professores():
+    professores_db.clear()
+    return jsonify({"mensagem": "Professores excluídos"})
+
+@app.route("/professores/<int:id>", methods = ["PUT"])
+def atualizar_professor(id):
+    qtd_professores = len(professores_db)
+    if qtd_professores == 0:
+        return jsonify({"mensagem": "Professor não encontrado"})
+    else:
+        for professor in professores_db:
+            if professor.id ==id:
+                nome_professor = request.get_json()
+                professor.nome = nome_professor.get("nome", professor.nome)
+                return jsonify({"mensagem": "Professor Atualizado"})
+
 
 
 
